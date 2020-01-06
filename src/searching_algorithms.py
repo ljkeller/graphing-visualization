@@ -169,47 +169,48 @@ def distance_from(start: tuple, end: tuple) -> int:
     x1, y1 = end
     return int(sqrt(((x0 - x1) ** 2) + ((y0 - y1) ** 2))) * 2
 
-def dfs(dfs_stack: list, parent: tuple):
-    if len(dfs_stack) == 0:
+def dfs(start: tuple, end: tuple):
+    dfs_tree = []
+    x, y = start
+    if start == end or marked[y][x] != 0:
         return
-    x, y = dfs_stack.pop()
-    if check_end((x, y)) or (marked[y][x] != 0 and (x,y) != START_POINT):
-        print(marked[y][x])
-        print(x,y)
-        return
+    dfs_stack.append(start)
+    while dfs_stack:
+        x,y = dfs_stack.pop()
+        dfs_tree.append((x,y))
+        if marked[y][x] != 0:
+            continue
+        marked[y][x] = dfs_tree[-1] #parent
+        if check_end((x,y)):
+            break
+        distance = distance_from(START_POINT, (x, y))
+        if distance > len(color_gradient3) - 1:
+            distance = len(color_gradient3) - 1
+        update_color(graph, boxes[y][x], distance)
 
-    distance = distance_from(START_POINT, END_POINT)
-    if distance > len(color_gradient3) - 1:
-        distance = len(color_gradient3) - 1
-    cur_node = boxes[y][x]
-    update_color(graph, cur_node, distance)
-    print(x,y)
-    print(parent)
-    if parent != START_POINT:
-        marked[y][x] = parent
+        above_exists = y < NUM_ELEMENTS_Y - 1
+        below_exists = y > 0
+        right_exists = x < NUM_ELEMENTS_X - 1
+        left_exists = x > 0
 
-    above_exists = y < NUM_ELEMENTS_Y - 1
-    below_exists = y > 0
-    right_exists = x < NUM_ELEMENTS_X - 1
-    left_exists = x > 0
+        if right_exists and marked[y][x + 1] == 0:
+            bfs_queue.append((x + 1, y))
+        if above_exists and right_exists and marked[y + 1][x + 1] == 0:
+            dfs_stack.append((x + 1, y + 1))
+        if below_exists and right_exists and marked[y - 1][x + 1] == 0:
+            dfs_stack.append((x + 1, y - 1))
+        if above_exists and marked[y + 1][x] == 0:
+            dfs_stack.append((x, y + 1))
+        if left_exists and marked[y][x - 1] == 0:
+            dfs_stack.append((x - 1, y))
+        if above_exists and left_exists and marked[y + 1][x - 1] == 0:
+            dfs_stack.append((x - 1, y + 1))
+        if below_exists and left_exists and marked[y - 1][x - 1] == 0:
+            dfs_stack.append((x - 1, y - 1))
+        if below_exists and marked[y - 1][x] == 0:
+            dfs_stack.append((x, y - 1))
 
-    if right_exists and marked[y][x + 1] == 0:
-        dfs_stack.append((x + 1, y))
-    if above_exists and right_exists and marked[y + 1][x + 1] == 0:
-        dfs_stack.append((x + 1, y + 1))
-    if below_exists and right_exists and marked[y - 1][x + 1] == 0:
-        dfs_stack.append((x + 1, y - 1))
-    if above_exists and marked[y + 1][x] == 0:
-        dfs_stack.append((x, y + 1))
-    if left_exists and marked[y][x - 1] == 0:
-        dfs_stack.append((x - 1, y))
-    if above_exists and left_exists and marked[y + 1][x - 1] == 0:
-        dfs_stack.append((x - 1, y + 1))
-    if below_exists and left_exists and marked[y - 1][x - 1] == 0:
-        dfs_stack.append((x - 1, y - 1))
-    if below_exists and marked[y - 1][x] == 0:
-        dfs_stack.append((x, y - 1))
-    dfs(dfs_stack, (x, y))
+
 
 
 def check_end(current_point: tuple):
@@ -290,79 +291,6 @@ while True:
         enable_start = True
     elif event == 'End':
         enable_end = True
-    # elif event == 'DFS':
-    #     print(f'Start point: {START_POINT} and '
-    #           f'end point: {END_POINT}')
-    #     if START_POINT == (-1, -1) or END_POINT == (-1, -1):
-    #         continue  # if start or end dont exist, ignore
-    #     x, y = START_POINT[0], START_POINT[1]
-    #     bfs_queue.append((x,y))
-    #     while len(bfs_queue) > 0:
-    #         check_end((x,y))
-    #         x, y = bfs_queue.pop()
-    #
-    #         above_exists = y < NUM_ELEMENTS_Y - 1
-    #         below_exists = y > 0
-    #         right_exists = x < NUM_ELEMENTS_X - 1
-    #         left_exists = x > 0
-    #
-    #         if right_exists and marked[y][x + 1] == 0:
-    #             right = boxes[y][x + 1]
-    #             bfs_queue.append((x+1, y))
-    #             update_color(graph, right)
-    #             marked[y][x+1] = 1
-    #             if check_end((x+1, y)):
-    #                 break
-    #
-    #         if above_exists and right_exists and marked[y + 1][x + 1] == 0:
-    #             top_right = boxes[y + 1][x + 1]
-    #             bfs_queue.append((x+1, y+1))
-    #             update_color(graph, top_right)
-    #             marked[y+1][x+1] = 1
-    #             if check_end(x+1, y+1):
-    #                 break
-    #         if below_exists and right_exists and marked[y - 1][x + 1] == 0:
-    #             bot_right = boxes[y - 1][x + 1]
-    #             bfs_queue.append((x+1, y-1))
-    #             update_color(graph, bot_right)
-    #             marked[y-1][x+1] = 1
-    #             if check_end((x+1, y-1)):
-    #                 break
-    #         if above_exists and marked[y + 1][x] == 0:
-    #             top = boxes[y + 1][x]
-    #             bfs_queue.append((x, y+1))
-    #             update_color(graph, top)
-    #             marked[y+1][x] = 1
-    #             if check_end((x, y+1)):
-    #                 break
-    #         if left_exists and marked[y][x - 1] == 0:
-    #             left = boxes[y][x - 1]
-    #             bfs_queue.append((x-1, y))
-    #             update_color(graph, left)
-    #             marked[y][x-1] = 1
-    #             if check_end((x-1, y)):
-    #                 break
-    #         if above_exists and left_exists and marked[y + 1][x - 1] == 0:
-    #             top_left = boxes[y + 1][x - 1]
-    #             bfs_queue.append((x-1, y+1))
-    #             update_color(graph, top_left)
-    #             marked[y+1][x-1] = 1
-    #             if check_end((x-1, y+1)):
-    #                 break
-    #         if below_exists and left_exists and marked[y - 1][x - 1] == 0:
-    #             bot_left = boxes[y - 1][x - 1]
-    #             bfs_queue.append((x-1, y-1))
-    #             update_color(graph, bot_left)
-    #             marked[y-1][x-1] = 1
-    #             if check_end((x-1, y-1)):
-    #                 break
-    #         if below_exists and marked[y - 1][x] == 0:
-    #             bot = boxes[y - 1][x]
-    #             bfs_queue.append((x, y-1))
-    #             update_color(graph, bot)
-    #             marked[y-1][x] = 1
-    #             if check_end((x, y-1)):
-    #                 break
     elif event == 'BFS':
         color_iterator = 0
         print(f'Start point: {START_POINT} and '
@@ -442,8 +370,7 @@ while True:
                 if check_end((x, y-1)):
                     break
     elif event == 'DFS':
-        dfs([START_POINT], START_POINT)
-
+        dfs(START_POINT, END_POINT)
     elif event == 'traversalGraph' and mouse != (None, None) and mouse != \
             last_mouse and not (enable_start or enable_end):
         # Clicking that happens in graph, no duplicates
@@ -457,7 +384,6 @@ while True:
         graph.TKCanvas.itemconfig(boxes[y][x], fill='white')
         print(graph.TKCanvas.itemconfig(boxes[y][x])['fill'][-1])  # box color
         marked[y][x] = 1
-
     elif event.endswith("+UP"):  # for dragging and letting go
         if enable_start and not enable_end:
             if START_POINT != (-1, -1):  # remove last instance, if exists
