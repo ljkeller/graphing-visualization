@@ -288,46 +288,69 @@ def dfs(start: tuple, end: tuple):
         right_exists = x < NUM_ELEMENTS_X - 1
         left_exists = x > 0
 
-
-
         if below_exists and right_exists:
             bot_right = marked[y - 1][x + 1]
-            if type(bot_right) is int or bot_right < (0, 0):
+            print(type(bot_right))
+            print(bot_right)
+            if (type(bot_right) is int and bot_right == 0) or (type(
+                    bot_right) is tuple and bot_right < (0, 0)):
+                print('yes')
                 dfs_stack.append((x + 1, y - 1))
                 marked[y - 1][x + 1] = (-x, -y)
         if below_exists:
             bot = marked[y - 1][x]
-            if type(bot) is int or bot < (0, 0):
+            if (type(bot) is int and bot == 0) or (type(bot) is tuple and
+                                                     bot < (0, 0)):
                 dfs_stack.append((x, y - 1))
                 marked[y - 1][x] = (-x, -y)
         if below_exists and left_exists:
             bot_left = marked[y - 1][x - 1]
-            if type(bot_left) is int or bot_left < (0, 0):
+            if (type(bot_left) is int and bot_left == 0) or (type(
+                    bot_left) is tuple and
+                                                               bot_left
+                                                               < (0, \
+                                                                  0)):
                 dfs_stack.append((x - 1, y - 1))
                 marked[y - 1][x - 1] = (-x, -y)
         if left_exists:
             left = marked[y][x - 1]
-            if type(left) is int or left < (0, 0):
+            if (type(left) is int and left == 0) or (type(left) is
+                                                       tuple and left < (0,
+                                                                         0)):
                 dfs_stack.append((x - 1, y))
                 marked[y][x - 1] = (-x, -y)
         if above_exists and left_exists:
             top_left = marked[y + 1][x - 1]
-            if type(top_left) is int or top_left < (0, 0):
+            if (type(top_left) is int and top_left == 0) or (type(
+                    top_left) is tuple and top_left <
+                                                               (0,
+                                                                0)):
                 dfs_stack.append((x - 1, y + 1))
                 marked[y + 1][x - 1] = (-x, -y)
         if above_exists:
             top = marked[y + 1][x]
-            if type(top) is int or top < (0, 0):
+            if (type(top) is int and top == '1') or (type(top) is tuple and
+                                                     top < (0,
+                                                            0)):
                 dfs_stack.append((x, y + 1))
                 marked[y + 1][x] = (-x, -y)
         if above_exists and right_exists:
             top_right = marked[y + 1][x + 1]
-            if type(top_right) is int or top_right < (0, 0):
+            if (type(top_right) is int and top_right == 0) or (type(
+                    top_right) is tuple and
+                                                                 top_right
+                                                                 < \
+                                                                 (0,
+                                                                  0)):
                 dfs_stack.append((x + 1, y + 1))
                 marked[y + 1][x + 1] = (-x, -y)
         if right_exists:
             right = marked[y][x + 1]
-            if type(right) is int or right < (0, 0):
+            if (type(right) is int and right == 0) or (type(right) is
+                                                         tuple and right <
+                                                         (0,
+                                                          0)):
+                print("test")
                 dfs_stack.append((x + 1, y))
                 marked[y][x + 1] = (-x, -y)
 
@@ -370,7 +393,6 @@ marked = [[0 for i in range(NUM_ELEMENTS_X)] for j in range(
     NUM_ELEMENTS_Y)]
 bfs_queue = []
 dfs_stack = []
-update_list = []
 last_mouse = (None, None)
 mouse = (None, None)
 color_iterator = 1
